@@ -5,7 +5,7 @@ This was an atempt to transform a design idea into code. Here's the inspiration 
 
 [Loading with Swift](https://dribbble.com/shots/1911260-Loading-with-Swift) 
 
-####Dribble: <br>
+####Creativedash: <br>
 <img src="https://d13yacurqjgara.cloudfront.net/users/107759/screenshots/1911260/loading.gif" alt="Dribble" width="280" style="max-width:100%;">
 
 ####MessageBalloon: <br>
