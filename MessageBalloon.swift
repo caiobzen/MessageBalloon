@@ -97,21 +97,24 @@ class Dots: UIView {
     // Animations
     
     func createAnimation(keyPath:AnimationKeyPath, fromValue:CGFloat, toValue:CGFloat, duration:CFTimeInterval) -> CASpringAnimation{
-        let move = CASpringAnimation(keyPath: keyPath.rawValue)
-        move.fromValue = fromValue
-        move.toValue = toValue
-        move.duration = duration
-        return move
+        let animation = CASpringAnimation(keyPath: keyPath.rawValue)
+        animation.fromValue = fromValue
+        animation.toValue = toValue
+        animation.duration = duration
+        animation.removedOnCompletion = false
+        animation.fillMode = kCAFillModeForwards;
+        return animation
     }
     
     func animationGroup(duration:CFTimeInterval, name:String, animations:[CASpringAnimation]) -> CAAnimationGroup {
-        let anim = CAAnimationGroup()
-        anim.animations = animations
-        anim.duration = duration
-        anim.setValue(name, forKey: "animation")
-        anim.removedOnCompletion = false
-        anim.delegate = self
-        return anim
+        let animationGroup = CAAnimationGroup()
+        animationGroup.animations = animations
+        animationGroup.duration = duration
+        animationGroup.setValue(name, forKey: "animation")
+        animationGroup.delegate = self
+        animationGroup.removedOnCompletion = false
+        animationGroup.fillMode = kCAFillModeForwards;
+        return animationGroup
     }
     
     func animationStart() {
@@ -119,7 +122,6 @@ class Dots: UIView {
         let alpha = createAnimation(.opacity, fromValue: 1.0, toValue: 0.0, duration: 0.5)
         let scale = createAnimation(.scale, fromValue: 1.0, toValue: 1.3, duration: 0.5)
         let anim = animationGroup(0.5, name: "up", animations: [move, alpha, scale])
-        
         caLayer.addAnimation(anim, forKey: nil)
     }
     
@@ -135,7 +137,7 @@ class Dots: UIView {
     override func animationDidStop(anim: CAAnimation, finished flag: Bool) {
         if (anim.valueForKey("animation") as! String == "up") {
             animationEnd()
-        } else {
+        } else if (anim.valueForKey("animation") as! String == "down") {
             animationStart()
         }
     }
