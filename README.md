@@ -15,8 +15,8 @@ This was an atempt to transform a design idea into code. Here's the inspiration 
 <br>
 ## Installation / Usage 💻
 
-1 - Add the MessageBalloon.swift into your app <br>
-2 - Place an UIView in your storyboarc <br>
+1 - Add the MessageBalloon.swift in your app <br>
+2 - Place an UIView in your storyboard <br>
 3 - Change the UIView class to MessageBalloon <br>
 4 - Done! <br>
 
