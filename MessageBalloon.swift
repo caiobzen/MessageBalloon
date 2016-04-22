@@ -19,7 +19,7 @@ extension CGPath {
         let boundingBoxAspectRatio = CGRectGetWidth(boundingBox)/CGRectGetHeight(boundingBox)
         let viewAspectRatio = CGRectGetWidth(frame)/CGRectGetHeight(frame)
         
-        var scaleFactor: CGFloat = 1.0;
+        var scaleFactor: CGFloat = 1.0
         if (boundingBoxAspectRatio > viewAspectRatio) {
             scaleFactor = CGRectGetWidth(frame)/CGRectGetWidth(boundingBox)
         } else {
@@ -70,15 +70,15 @@ class Dots: UIView {
     }
     
     override init(frame: CGRect) {
-        super.init(frame: frame);
+        super.init(frame: frame)
         
-        commonInit();
+        commonInit()
     }
     
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         
-        commonInit();
+        commonInit()
     }
     
     func commonInit() {
@@ -87,21 +87,19 @@ class Dots: UIView {
         replicator.instanceCount = 3
         replicator.instanceDelay = 0.1
         
-        
         caLayer = CALayer()
         caLayer.backgroundColor = dotColor.CGColor
         
-        replicator.addSublayer(caLayer);
+        replicator.addSublayer(caLayer)
         
-        
-        layoutLayers();
-        animationStart();
+        layoutLayers()
+        animationStart()
     }
     
     private func layoutLayers() {
         replicator.instanceTransform = CATransform3DMakeTranslation(dotSize * 1.6, 0.0, 0.0)
         
-        caLayer.bounds =  CGRect(x: 0, y: 0, width: dotSize, height: dotSize);
+        caLayer.bounds =  CGRect(x: 0, y: 0, width: dotSize, height: dotSize)
         caLayer.position = CGPoint(x: center.x - (dotSize * 1.6), y: center.y + (dotSize * 0.2))
         caLayer.cornerRadius = dotSize / 2
     }
@@ -109,7 +107,7 @@ class Dots: UIView {
     override func layoutSubviews() {
         super.layoutSubviews()
         
-        layoutLayers();
+        layoutLayers()
     }
     
     var dotSize: CGFloat {
@@ -124,7 +122,7 @@ class Dots: UIView {
         animation.toValue = toValue
         animation.duration = duration
         animation.removedOnCompletion = false
-        animation.fillMode = kCAFillModeForwards;
+        animation.fillMode = kCAFillModeForwards
         return animation
     }
     
@@ -135,7 +133,7 @@ class Dots: UIView {
         animationGroup.setValue(name, forKey: "animation")
         animationGroup.delegate = self
         animationGroup.removedOnCompletion = false
-        animationGroup.fillMode = kCAFillModeForwards;
+        animationGroup.fillMode = kCAFillModeForwards
         return animationGroup
     }
     
@@ -172,17 +170,17 @@ class MessageBalloon: UIView {
 
     @IBInspectable var lineWidth:CGFloat = 5 {
         didSet {
-            shapeLayer.lineWidth = lineWidth;
+            shapeLayer.lineWidth = lineWidth
         }
     }
     @IBInspectable var color: UIColor = UIColor.clearColor() {
         didSet {
-            shapeLayer.fillColor = color.CGColor;
+            shapeLayer.fillColor = color.CGColor
         }
     }
     @IBInspectable var lineColor: UIColor = UIColor.blackColor() {
         didSet {
-            shapeLayer.strokeColor = lineColor.CGColor;
+            shapeLayer.strokeColor = lineColor.CGColor
         }
     }
     @IBInspectable var dotColor:UIColor = UIColor.blackColor() {
@@ -191,10 +189,10 @@ class MessageBalloon: UIView {
         }
     }
     
-    var dots = Dots();
+    var dots = Dots()
     
     lazy var bezierPath: UIBezierPath = {
-        let path = UIBezierPath();
+        let path = UIBezierPath()
         
         path.moveToPoint(CGPointMake(127.63, 28.23))
         path.addCurveToPoint(CGPointMake(127.63, 72.77), controlPoint1: CGPointMake(140.12, 40.53), controlPoint2: CGPointMake(140.12, 60.47))
@@ -205,8 +203,8 @@ class MessageBalloon: UIView {
         path.addCurveToPoint(CGPointMake(82.37, 28.23), controlPoint1: CGPointMake(73.9, 40.3), controlPoint2: CGPointMake(76.97, 33.55))
         path.addCurveToPoint(CGPointMake(127.63, 28.23), controlPoint1: CGPointMake(94.87, 15.92), controlPoint2: CGPointMake(115.13, 15.92))
         
-        return path;
-    }();
+        return path
+    }()
     
     override class func layerClass() -> AnyClass {
         return CAShapeLayer.self
@@ -217,23 +215,23 @@ class MessageBalloon: UIView {
     }
     
     override init(frame: CGRect) {
-        super.init(frame: frame);
+        super.init(frame: frame)
 
-        commonInit();
+        commonInit()
     }
     
     required init?(coder aDecoder: NSCoder) {
-        super.init(coder: aDecoder);
+        super.init(coder: aDecoder)
         
         commonInit()
     }
     
     private func commonInit() {
-        dots = Dots(frame: bounds);
-        dots.dotColor = dotColor;
-        addSubview(dots);
+        dots = Dots(frame: bounds)
+        dots.dotColor = dotColor
+        addSubview(dots)
         
-        shapeLayer.lineJoin = kCALineJoinRound;
+        shapeLayer.lineJoin = kCALineJoinRound
         shapeLayer.strokeColor = lineColor.CGColor
         shapeLayer.fillColor = color.CGColor
         shapeLayer.lineJoin = kCALineJoinRound
@@ -241,14 +239,13 @@ class MessageBalloon: UIView {
     }
     
     private func adjustShapeLayerPathForBounds(newBounds: CGRect) {
-        shapeLayer.path = CGPath.rescaleForFrame(bezierPath.CGPath, frame: newBounds);
+        shapeLayer.path = CGPath.rescaleForFrame(bezierPath.CGPath, frame: newBounds)
     }
     
     override func layoutSubviews() {
         super.layoutSubviews()
         
-        adjustShapeLayerPathForBounds(bounds);
-        
-        dots.frame = bounds;
+        adjustShapeLayerPathForBounds(bounds)
+        dots.frame = bounds
     }
 }
