@@ -69,29 +69,51 @@ class Dots: UIView {
         return CAReplicatorLayer.self
     }
     
+    override init(frame: CGRect) {
+        super.init(frame: frame);
+        
+        commonInit();
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
+        
+        commonInit();
+    }
+    
+    func commonInit() {
+        
+        replicator.backgroundColor = UIColor.clearColor().CGColor
+        replicator.instanceCount = 3
+        replicator.instanceDelay = 0.1
+        
+        
+        caLayer = CALayer()
+        caLayer.backgroundColor = dotColor.CGColor
+        
+        replicator.addSublayer(caLayer);
+        
+        
+        layoutLayers();
+        animationStart();
+    }
+    
+    private func layoutLayers() {
+        replicator.instanceTransform = CATransform3DMakeTranslation(dotSize * 1.6, 0.0, 0.0)
+        
+        caLayer.bounds =  CGRect(x: 0, y: 0, width: dotSize, height: dotSize);
+        caLayer.position = CGPoint(x: center.x - (dotSize * 1.6), y: center.y + (dotSize * 0.2))
+        caLayer.cornerRadius = dotSize / 2
+    }
+    
     override func layoutSubviews() {
         super.layoutSubviews()
         
-        //Replicator
-        replicator.backgroundColor = UIColor.clearColor().CGColor
-        replicator.instanceCount = 3
-        replicator.instanceTransform = CATransform3DMakeTranslation(dotSize() * 1.6, 0.0, 0.0)
-        replicator.instanceDelay = 0.1
-        
-        //Layer
-        caLayer = CALayer()
-        caLayer.bounds = CGRect(x: 0.0, y: 0.0, width: dotSize(), height: dotSize())
-        caLayer.position = CGPoint(x: center.x - (dotSize() * 1.6), y: center.y + (dotSize() * 0.2))
-        caLayer.cornerRadius = dotSize() / 2
-        caLayer.backgroundColor = dotColor.CGColor
-        
-        replicator.addSublayer(caLayer)
-        
-        animationStart()
+        layoutLayers();
     }
     
-    func dotSize() -> CGFloat {
-        return self.frame.size.height / 10
+    var dotSize: CGFloat {
+        return bounds.height / 10
     }
     
     // Animations
@@ -118,7 +140,7 @@ class Dots: UIView {
     }
     
     func animationStart() {
-        let move = createAnimation(.yPosition, fromValue:caLayer.position.y, toValue: caLayer.position.y - dotSize(), duration: 0.5)
+        let move = createAnimation(.yPosition, fromValue:caLayer.position.y, toValue: caLayer.position.y - dotSize, duration: 0.5)
         let alpha = createAnimation(.opacity, fromValue: 1.0, toValue: 0.0, duration: 0.5)
         let scale = createAnimation(.scale, fromValue: 1.0, toValue: 1.3, duration: 0.5)
         let anim = animationGroup(0.5, name: "up", animations: [move, alpha, scale])
@@ -148,52 +170,85 @@ class Dots: UIView {
 @IBDesignable
 class MessageBalloon: UIView {
 
-    @IBInspectable var lineWidth:CGFloat = 5
-    @IBInspectable var color: UIColor = UIColor.clearColor()
-    @IBInspectable var lineColor:UIColor = UIColor.blackColor()
+    @IBInspectable var lineWidth:CGFloat = 5 {
+        didSet {
+            shapeLayer.lineWidth = lineWidth;
+        }
+    }
+    @IBInspectable var color: UIColor = UIColor.clearColor() {
+        didSet {
+            shapeLayer.fillColor = color.CGColor;
+        }
+    }
+    @IBInspectable var lineColor: UIColor = UIColor.blackColor() {
+        didSet {
+            shapeLayer.strokeColor = lineColor.CGColor;
+        }
+    }
     @IBInspectable var dotColor:UIColor = UIColor.blackColor() {
         didSet {
             dots.dotColor = dotColor
         }
     }
     
-    var dots = Dots()
-
-    var bezierPath = UIBezierPath()
+    var dots = Dots();
+    
+    lazy var bezierPath: UIBezierPath = {
+        let path = UIBezierPath();
+        
+        path.moveToPoint(CGPointMake(127.63, 28.23))
+        path.addCurveToPoint(CGPointMake(127.63, 72.77), controlPoint1: CGPointMake(140.12, 40.53), controlPoint2: CGPointMake(140.12, 60.47))
+        path.addCurveToPoint(CGPointMake(87.79, 77.06), controlPoint1: CGPointMake(116.81, 83.42), controlPoint2: CGPointMake(100.17, 84.85))
+        path.addCurveToPoint(CGPointMake(74, 81), controlPoint1: CGPointMake(86.02, 77.56), controlPoint2: CGPointMake(74, 81))
+        path.addCurveToPoint(CGPointMake(78.78, 68.57), controlPoint1: CGPointMake(74, 81), controlPoint2: CGPointMake(77.82, 71.07))
+        path.addCurveToPoint(CGPointMake(73.17, 47.25), controlPoint1: CGPointMake(74.27, 62.24), controlPoint2: CGPointMake(72.4, 54.63))
+        path.addCurveToPoint(CGPointMake(82.37, 28.23), controlPoint1: CGPointMake(73.9, 40.3), controlPoint2: CGPointMake(76.97, 33.55))
+        path.addCurveToPoint(CGPointMake(127.63, 28.23), controlPoint1: CGPointMake(94.87, 15.92), controlPoint2: CGPointMake(115.13, 15.92))
+        
+        return path;
+    }();
+    
     override class func layerClass() -> AnyClass {
         return CAShapeLayer.self
     }
     
-    private func shapeLayer() -> CAShapeLayer {
+    private var shapeLayer: CAShapeLayer {
         return layer as! CAShapeLayer
+    }
+    
+    override init(frame: CGRect) {
+        super.init(frame: frame);
+
+        commonInit();
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder);
+        
+        commonInit()
+    }
+    
+    private func commonInit() {
+        dots = Dots(frame: bounds);
+        dots.dotColor = dotColor;
+        addSubview(dots);
+        
+        shapeLayer.lineJoin = kCALineJoinRound;
+        shapeLayer.strokeColor = lineColor.CGColor
+        shapeLayer.fillColor = color.CGColor
+        shapeLayer.lineJoin = kCALineJoinRound
+        shapeLayer.lineWidth = lineWidth
+    }
+    
+    private func adjustShapeLayerPathForBounds(newBounds: CGRect) {
+        shapeLayer.path = CGPath.rescaleForFrame(bezierPath.CGPath, frame: newBounds);
     }
     
     override func layoutSubviews() {
         super.layoutSubviews()
         
-        backgroundColor = UIColor.clearColor()
+        adjustShapeLayerPathForBounds(bounds);
         
-        //Balloon shape
-        bezierPath.moveToPoint(CGPointMake(127.63, 28.23))
-        bezierPath.addCurveToPoint(CGPointMake(127.63, 72.77), controlPoint1: CGPointMake(140.12, 40.53), controlPoint2: CGPointMake(140.12, 60.47))
-        bezierPath.addCurveToPoint(CGPointMake(87.79, 77.06), controlPoint1: CGPointMake(116.81, 83.42), controlPoint2: CGPointMake(100.17, 84.85))
-        bezierPath.addCurveToPoint(CGPointMake(74, 81), controlPoint1: CGPointMake(86.02, 77.56), controlPoint2: CGPointMake(74, 81))
-        bezierPath.addCurveToPoint(CGPointMake(78.78, 68.57), controlPoint1: CGPointMake(74, 81), controlPoint2: CGPointMake(77.82, 71.07))
-        bezierPath.addCurveToPoint(CGPointMake(73.17, 47.25), controlPoint1: CGPointMake(74.27, 62.24), controlPoint2: CGPointMake(72.4, 54.63))
-        bezierPath.addCurveToPoint(CGPointMake(82.37, 28.23), controlPoint1: CGPointMake(73.9, 40.3), controlPoint2: CGPointMake(76.97, 33.55))
-        bezierPath.addCurveToPoint(CGPointMake(127.63, 28.23), controlPoint1: CGPointMake(94.87, 15.92), controlPoint2: CGPointMake(115.13, 15.92))
-        
-        //Balloon configuration
-        shapeLayer().path = CGPath.rescaleForFrame(bezierPath.CGPath, frame: frame)
-        shapeLayer().strokeColor = lineColor.CGColor
-        shapeLayer().fillColor = color.CGColor
-        shapeLayer().lineJoin = kCALineJoinRound
-        shapeLayer().lineWidth = lineWidth
-        
-        //Adding the dots
-        dots = Dots(frame: bounds)
-        dots.dotColor = dotColor
-        
-        addSubview(dots)
+        dots.frame = bounds;
     }
 }
